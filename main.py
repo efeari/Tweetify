@@ -119,7 +119,6 @@ class Tweetify():
             for user in mentions[1]["users"]:
                 self.is_following(user)
             for mention in mentions[0]:
-                self.last_mention_id = mentions.meta["newest_id"]
                 mention_id = mention.id
                 # Like the tweet first!
                 self.client.like(mention_id, user_auth=True)
@@ -137,6 +136,7 @@ class Tweetify():
                     )
                 else:
                     self.help_tweet(mention_id)
+                self.last_mention_id = mentions.meta["newest_id"]
             with open('filename.pickle', 'wb') as file:
                 pickle.dump(self.last_mention_id, file)
         else:
@@ -158,7 +158,7 @@ class Tweetify():
         )
 
     def add_to_queue(self, mention_id, mention):
-        if (self.sp.current_user_playing_track is not None):
+        if (self.sp.current_user_playing_track() is not None):
             res = self.sp.search(mention)
             res = res["tracks"]["items"][0]
             artist = res["artists"][0]
