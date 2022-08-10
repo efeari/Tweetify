@@ -1,5 +1,5 @@
 # tweetify
-![alt text](https://github.com/efeari/tweetify/blob/main/TweetifyPicture.jpg)
+![alt text](https://github.com/efeari/Tweetify/blob/master/TweetifyPicture.jpg)
 
 A repository to tweet random suggestions from users playlists or liked songs. <br />
 Check it out in action! https://twitter.com/Tweetify_Bot <br />
