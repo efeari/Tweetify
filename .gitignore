@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 *.cache-efearykan
 *.DS_Store
-
+*.pickle
 # C extensions
 *.so
 
