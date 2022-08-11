@@ -5,17 +5,16 @@ Created on Sun Aug  7 14:36:35 2022
 
 @author: efearikan
 """
-
-import tweetify
 import pickle
+import tweetify
 
 
 def main():
     try:
         with open('dump.pickle', 'rb') as file:
             tfy = tweetify.Tweetify()
-            [tfy.last_mention_id, tfy.last_tweet_id] = pickle.load(file)
-    except (OSError):
+            tfy.last_mention_id = pickle.load(file)
+    except OSError:
         tfy = tweetify.Tweetify()
     tfy.run()
 

@@ -5,17 +5,16 @@ Created on Thu Aug 11 18:35:17 2022
 
 @author: efearikan
 """
-
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
 from random import choice, seed
-import tweepy
 import os
 import time
 import pickle
 import schedule
-import message
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+import tweepy
 import track as tr
+import message
 
 
 class Tweetify():
@@ -38,7 +37,6 @@ class Tweetify():
         )
         self.twitter_id = self.client.get_me()[0]["id"]
         self.last_mention_id = 1
-        self.last_tweet_id = 1
 
         self.tracks = []
         seed(None)
@@ -65,7 +63,7 @@ class Tweetify():
 
     def run(self):
         print("Starting the bot")
-        while (True):
+        while True:
             try:
                 schedule.run_pending()
                 time.sleep(1)
@@ -74,12 +72,12 @@ class Tweetify():
 
     def get_user_playlists(self):
         playlists = self.sp.current_user_playlists()
-        self.playlists = []
+        res = []
         for playlist in playlists['items']:
             if playlist['owner']['id'] != self.user_id:
                 continue
-            else:
-                self.playlists.append(playlist)
+
+            res.append(playlist)
         # for item in self.sp.current_user_saved_tracks()['items']:
         #     track = item['track']
         #     artist = track['artists'][0]
@@ -89,8 +87,10 @@ class Tweetify():
         #     track = Track(artist, name, url, "Liked Songs", "-")
         #     self.tracks.append(track)
 
-    def get_tracks(self):
-        for playlist in self.playlists:
+        return res
+
+    def get_tracks(self, playlists):
+        for playlist in playlists:
             results = self.sp.playlist(playlist['id'], fields="tracks,next")
             tracks = results['tracks']
             self.iterate_tracks(
@@ -114,8 +114,7 @@ class Tweetify():
             self.tracks.append(track)
 
     def get_random_track(self):
-        self.get_user_playlists()
-        self.get_tracks()
+        self.get_tracks(self.get_user_playlists())
         return choice(self.tracks)
 
     def basic_tweet(self, msg, mention_id=None):
@@ -153,7 +152,7 @@ class Tweetify():
 
             self.last_mention_id = mentions.meta["newest_id"]
             with open('dump.pickle', 'wb') as file:
-                pickle.dump([self.last_mention_id, self.last_tweet_id], file)
+                pickle.dump(self.last_mention_id, file)
         else:
             print("Sleeping")
 
@@ -161,13 +160,12 @@ class Tweetify():
         track = self.get_random_track()
         msg = message.SuggestionMessage()
         msg.format_text(track.name, track.artist,
-                        track.from_playlist,
-                        track.from_playlist_link,
+                        track.playlist,
+                        track.playlist_link,
                         track.url)
-        tweet = self.client.create_tweet(
+        self.client.create_tweet(
             text=msg.get, in_reply_to_tweet_id=(mention_id)
         )
-        tweet.data['id']
 
     def help_tweet(self, mention_id):
         msg = message.HelpMessage()
@@ -177,7 +175,7 @@ class Tweetify():
         )
 
     def add_to_queue(self, mention_id, mention):
-        if (self.sp.current_user_playing_track() is not None):
+        if self.sp.current_user_playing_track() is not None:
             res = self.sp.search(mention)
             res = res["tracks"]["items"][0]
             artist = res["artists"][0]
