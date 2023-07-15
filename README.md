@@ -1,5 +1,7 @@
 # tweetify
 
+Unfortunately, Tweetify was banned on Twitter without any explanations 
+
 A repository to tweet random suggestions from users playlists or liked songs. <br />
 Check it out in action! https://twitter.com/Tweetify_Bot <br />
 
